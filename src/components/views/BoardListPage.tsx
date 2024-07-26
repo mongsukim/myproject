@@ -1,9 +1,4 @@
-import React from "react";
-
-const BoardListPage = () =>{
-    return(
-
-        <div>BoardListPage</div>
-    )
-}
-export default BoardListPage
+const BoardListPage = () => {
+  return <div>ddddddddddd</div>;
+};
+export default BoardListPage;
