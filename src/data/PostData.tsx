@@ -1,38 +1,25 @@
-/**
- * @jsxRuntime classic
- * @jsx jsx
- */
-
-import React from 'react';
-
-import { useEffect, useState } from 'react';
+import React, { FC, ReactNode, useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
-
 import { css, jsx } from '@emotion/react';
 import kebabCase from 'lodash/kebabCase';
-
-import Avatar from '@atlaskit/avatar';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import { Box, xcss } from '@atlaskit/primitives';
 import { userListState } from '../atom/userListAtom';
-import { lorem } from './lorem';
-
+import Pagination from '@atlaskit/pagination';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 interface President {
+  UserId: number;
   id: number;
-  name: string;
-  phone: string;
-  province: string;
+  title: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 function createKey(input: string) {
   return input ? input.replace(/^(the|a|an)/, '').replace(/\s/g, '') : input;
-}
-
-function iterateThroughLorem(index: number) {
-  return index > lorem.length ? index - lorem.length : index;
 }
 
 const nameWrapperStyles = css({
@@ -56,21 +43,21 @@ export const createHead = (withWidth: boolean) => {
   return {
     cells: [
       {
-        key: 'name',
-        content: 'Name',
+        key: 'content',
+        content: 'content',
         isSortable: true,
         width: withWidth ? 25 : undefined,
       },
       {
-        key: 'province',
-        content: 'Province',
+        key: 'createdAt',
+        content: 'createdAt',
         shouldTruncate: true,
         isSortable: true,
         width: withWidth ? 15 : undefined,
       },
       {
-        key: 'phone',
-        content: 'Phone',
+        key: 'updatedAt',
+        content: 'updatedAt',
         shouldTruncate: true,
         isSortable: true,
         width: withWidth ? 10 : undefined,
@@ -89,9 +76,13 @@ const DataTable: FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage] = useState(10);
+
   useEffect(() => {
     axios
-      .get('https://koreanjson.com/users')
+      .get('https://koreanjson.com/Posts')
       .then((response) => {
         console.log('response', response?.data);
         setPresidents(Array.isArray(response.data) ? response.data : []);
@@ -104,46 +95,69 @@ const DataTable: FC = () => {
       });
   }, [setPresidents]);
 
+  // Calculate index of last and first post on current page
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+
+  // Slice the posts array to get the posts for the current page
+  const currentPosts = Array.isArray(presidents)
+    ? presidents.slice(indexOfFirstPost, indexOfLastPost)
+    : [];
+
+  // Create table head
   const head = createHead(true);
 
-  const rows = Array.isArray(presidents)
-    ? presidents.map((president: President, index: number) => ({
-        key: kebabCase(president.name),
-        isHighlighted: false,
-        cells: [
-          {
-            key: createKey(president.name),
-            content: (
-              <NameWrapper>
-                <AvatarWrapper>
-                  <Avatar name={president.name} size="medium" />
-                </AvatarWrapper>
-                <Link to={`/UserDetail/${president.id}`}>{president.name}</Link>
-              </NameWrapper>
-            ),
-          },
-          { key: createKey(president.province), content: president.province || 'N/A' },
-          { key: createKey(president.phone), content: president.phone },
-          {
-            key: 'MoreDropdown',
-            content: (
-              <DropdownMenu trigger="More" label={`More about ${president.name}`}>
-                <DropdownItemGroup>
-                  <DropdownItem> </DropdownItem>
-                </DropdownItemGroup>
-              </DropdownMenu>
-            ),
-          },
-        ],
-      }))
-    : [];
+  const formDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0]; // Extract the date part (YYYY-MM-DD)
+  };
+
+  const rows = currentPosts.map((contents: President) => ({
+    key: contents.id, // Use unique 'id' as key
+    isHighlighted: false,
+    cells: [
+      {
+        key: createKey(contents.title),
+        content: (
+          <NameWrapper>
+            <Link to={`/PostDetail/${contents.id}`}>
+              {contents.title.length > 20
+                ? `${contents.title.slice(0, 20)}...`
+                : contents.title}
+            </Link>
+          </NameWrapper>
+        ),
+      },
+      {
+        key: createKey(contents.createdAt),
+        content: formDate(contents.createdAt) || 'N/A',
+      },
+      { key: createKey(contents.updatedAt), content: formDate(contents.updatedAt) },
+      {
+        key: `MoreDropdown-${contents.id}`, // Use unique key for dropdown
+        content: (
+          <DropdownMenu trigger="More" label={`More about ${contents.title}`}>
+            <DropdownItemGroup>
+              <DropdownItem> </DropdownItem>
+            </DropdownItemGroup>
+          </DropdownMenu>
+        ),
+      },
+    ],
+  }));
+
+  const totalPages = Math.ceil(presidents.length / postsPerPage);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error loading data: {error.message}</div>;
 
   return (
     <div>
-      <h1>유저 목록</h1>
+      <h1>게시글 목록</h1>
       <table>
         <thead>
           <tr>
@@ -162,6 +176,15 @@ const DataTable: FC = () => {
           ))}
         </tbody>
       </table>
+      <Pagination
+        nextLabel="Next"
+        label="Page"
+        pageLabel="Page"
+        pages={Array.from({ length: totalPages }, (_, i) => i + 1)}
+        previousLabel="Previous"
+        onChange={(page) => handlePageChange(page)}
+        currentPage={currentPage}
+      />
     </div>
   );
 };

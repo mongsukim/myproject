@@ -1,5 +1,5 @@
 import React from 'react';
-import DataTable from '../../data/data';
+import DataTable from '../../data/UserData';
 
 const UserListPage = () => {
   return (

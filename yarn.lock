@@ -274,6 +274,21 @@
     "@emotion/react" "^11.7.1"
     bind-event-listener "^3.0.0"
 
+"@atlaskit/pagination@^14.7.9":
+  version "14.7.9"
+  resolved "https://registry.npmjs.org/@atlaskit/pagination/-/pagination-14.7.9.tgz"
+  integrity sha512-6fcaCy0YYXBnBvIf/IhJgW86nR2hs51YFxnwSB3S0YDLQA2YwvnKRNrozvPO83DMhBwW8bd6FzMQZkkrtLCrhQ==
+  dependencies:
+    "@atlaskit/analytics-next" "^9.3.0"
+    "@atlaskit/button" "^19.0.0"
+    "@atlaskit/codemod-utils" "^4.2.0"
+    "@atlaskit/ds-lib" "^2.3.0"
+    "@atlaskit/icon" "^22.6.0"
+    "@atlaskit/primitives" "^11.0.0"
+    "@atlaskit/visually-hidden" "^1.4.0"
+    "@babel/runtime" "^7.0.0"
+    memoize-one "^6.0.0"
+
 "@atlaskit/platform-feature-flags@^0.3.0":
   version "0.3.0"
   resolved "https://registry.npmjs.org/@atlaskit/platform-feature-flags/-/platform-feature-flags-0.3.0.tgz"
