@@ -13,7 +13,11 @@ const TodoListPage = () => {
     },
     [i18n]
   );
-  const [todos, setTodos] = useState();
+
+  const [todos, setTodos] = useState([]);
+  const [filter, setFilter] = useState('all'); // 필터 상태 추가
+  console.log('filter', filter);
+
   useEffect(() => {
     axios
       .get('https://koreanjson.com/todos')
@@ -26,6 +30,13 @@ const TodoListPage = () => {
       });
   }, []);
 
+  // 필터링된 todos 계산
+  const filteredTodos = todos.filter((item) => {
+    if (filter === 'completed') return item.completed;
+    if (filter === 'incomplete') return !item.completed;
+    return true; // 'all'일 경우
+  });
+
   return (
     <div>
       한영전환 :
@@ -36,15 +47,40 @@ const TodoListPage = () => {
       <button onClick={() => toggleLocales('ko-KR')} title="한글로 바꾸기">
         KO
       </button>
-      <div className=" mt-[100px] w-[700px] mx-auto outline outline-1 outline-gray-500">
-        <div className="flex py-[10px] justify-center border border-b-[1px] border-solid ">
+      <div className="filter-buttons mt-[20px]">
+        <button
+          className={`${filter === 'all' ? 'font-bold' : ''}`}
+          onClick={() => setFilter('all')}
+        >
+          {/*모두 보기*/}
+          {t('SeeAll')}
+        </button>
+        &nbsp;|&nbsp;
+        <button
+          className={`${filter === 'completed' ? 'font-bold' : ''}`}
+          onClick={() => setFilter('completed')}
+        >
+          {/*미완료된 할일*/}
+          {t('Uncompleted')}
+        </button>
+        &nbsp;|&nbsp;
+        <button
+          className={`${filter === 'incomplete' ? 'font-bold' : ''}`}
+          onClick={() => setFilter('incomplete')}
+        >
+          {/*완료된 할일*/}
+          {t('Completed')}
+        </button>
+      </div>
+      <div className="mt-[20px] w-[700px] mx-auto outline outline-1 outline-gray-500">
+        <div className="flex py-[10px] justify-center border border-b-[1px] border-solid">
           <div className="w-1/5 flex justify-center">{t('complete')}</div>
           <div className="w-4/5 flex justify-center">{t('todo')}</div>
         </div>
-        {todos?.map((item, index) => (
+        {filteredTodos.map((item, index) => (
           <div
             key={index}
-            className="flex justify-center border border-b-[1px] border-solid py-[5px] "
+            className="flex justify-center border border-b-[1px] border-solid py-[5px]"
           >
             <div className="w-1/5 flex justify-center">
               {item.completed ? (
@@ -64,4 +100,5 @@ const TodoListPage = () => {
     </div>
   );
 };
+
 export default TodoListPage;

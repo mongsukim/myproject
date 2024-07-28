@@ -1,4 +1,7 @@
 {
   "todo": "할일 목록",
-  "complete": "완료 여부"
+  "complete": "완료 여부",
+  "Completed": "완료된 항목 보기",
+  "Uncompleted": "미완료된 항목 보기",
+  "SeeAll": "모두 보기"
 }

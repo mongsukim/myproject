@@ -1,4 +1,7 @@
 {
   "todo": "To do list",
-  "complete": "Completed or not"
+  "complete": "Completed or not",
+  "Completed": "Completed items",
+  "Uncompleted": "Uncompleted items",
+  "SeeAll": "See all"
 }
