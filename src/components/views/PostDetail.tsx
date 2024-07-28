@@ -12,7 +12,9 @@ const PostDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 날짜 형식을 YYYY-MM-DD로 변환하는 함수입니다.
+  const [editComment, setEditComment] = useState(false);
+
+  console.log('editComment', editComment);
   const formDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toISOString().split('T')[0]; // ISO 문자열에서 날짜 부분만 추출합니다.
@@ -73,8 +75,17 @@ const PostDetail = () => {
         {comments.map((comment) => (
           <li key={comment.id}>
             <Avatar name={comment.id} size="medium" />
-            <strong>{comment.author}</strong> {comment.content}
-            <Button>댓글 수정</Button>
+            <strong>{comment.author}</strong>
+
+            {editComment ? (
+              <>
+                <input />
+              </>
+            ) : (
+              <div> {comment.content} </div>
+            )}
+
+            <Button onClick={() => setEditComment((prev) => !prev)}>댓글 수정</Button>
           </li>
         ))}
       </ul>

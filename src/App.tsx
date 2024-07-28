@@ -8,6 +8,7 @@ import Home from './components/views/Home';
 import { RecoilRoot } from 'recoil';
 import UserDetail from './components/views/UserDetail';
 import PostDetail from './components/views/PostDetail';
+import '../src/index.css';
 
 function App() {
   return (
