@@ -1,11 +1,11 @@
+/* eslint-disable @atlaskit/design-system/ensure-design-token-usage */
+
 import React, { FC, ReactNode, useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { css, jsx } from '@emotion/react';
-import kebabCase from 'lodash/kebabCase';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import { Box, xcss } from '@atlaskit/primitives';
 import { userListState } from '../atom/userListAtom';
-import Pagination from '@atlaskit/pagination';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
@@ -13,7 +13,7 @@ interface President {
   UserId: number;
   id: number;
   title: string;
-  content: string;
+  content: string | number;
   createdAt: string;
   updatedAt: string;
 }
@@ -43,21 +43,27 @@ export const createHead = (withWidth: boolean) => {
   return {
     cells: [
       {
-        key: 'content',
-        content: 'content',
+        key: 'id',
+        content: 'ID',
+        isSortable: true,
+        width: withWidth ? 25 : undefined,
+      },
+      {
+        key: 'title',
+        content: 'Title',
         isSortable: true,
         width: withWidth ? 25 : undefined,
       },
       {
         key: 'createdAt',
-        content: 'createdAt',
+        content: 'Created At',
         shouldTruncate: true,
         isSortable: true,
         width: withWidth ? 15 : undefined,
       },
       {
         key: 'updatedAt',
-        content: 'updatedAt',
+        content: 'Updated At',
         shouldTruncate: true,
         isSortable: true,
         width: withWidth ? 10 : undefined,
@@ -80,6 +86,9 @@ const DataTable: FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(10);
 
+  // Search state
+  const [searchTerm, setSearchTerm] = useState('');
+
   useEffect(() => {
     axios
       .get('https://koreanjson.com/Posts')
@@ -99,10 +108,16 @@ const DataTable: FC = () => {
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
 
+  // Ensure presidents is an array
+  const presidentsArray = Array.isArray(presidents) ? presidents : [];
+
+  // Filter posts based on search term
+  const filteredPresidents = presidentsArray.filter((president) =>
+    president.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   // Slice the posts array to get the posts for the current page
-  const currentPosts = Array.isArray(presidents)
-    ? presidents.slice(indexOfFirstPost, indexOfLastPost)
-    : [];
+  const currentPosts = filteredPresidents.slice(indexOfFirstPost, indexOfLastPost);
 
   // Create table head
   const head = createHead(true);
@@ -116,6 +131,10 @@ const DataTable: FC = () => {
     key: contents.id, // Use unique 'id' as key
     isHighlighted: false,
     cells: [
+      {
+        key: createKey(contents.id.toString()), // Convert 'id' to string
+        content: contents.id,
+      },
       {
         key: createKey(contents.title),
         content: (
@@ -146,10 +165,30 @@ const DataTable: FC = () => {
     ],
   }));
 
-  const totalPages = Math.ceil(presidents.length / postsPerPage);
-
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
+  };
+
+  const renderPageNumbers = () => {
+    const pageNumbers = [];
+    for (let i = 1; i <= Math.ceil(filteredPresidents.length / postsPerPage); i++) {
+      pageNumbers.push(
+        <button
+          key={i}
+          onClick={() => handlePageChange(i)}
+          style={{
+            margin: '0 5px',
+            padding: '5px 10px',
+            cursor: 'pointer',
+            backgroundColor: currentPage === i ? '#007bff' : '#fff',
+            color: currentPage === i ? '#fff' : '#000',
+          }}
+        >
+          {i}
+        </button>
+      );
+    }
+    return pageNumbers;
   };
 
   if (loading) return <div>Loading...</div>;
@@ -158,6 +197,13 @@ const DataTable: FC = () => {
   return (
     <div>
       <h1>게시글 목록</h1>
+      <input
+        type="text"
+        placeholder="검색어를 입력하세요"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={{ marginBottom: '20px', padding: '10px', width: '100%' }}
+      />
       <table>
         <thead>
           <tr>
@@ -176,15 +222,9 @@ const DataTable: FC = () => {
           ))}
         </tbody>
       </table>
-      <Pagination
-        nextLabel="Next"
-        label="Page"
-        pageLabel="Page"
-        pages={Array.from({ length: totalPages }, (_, i) => i + 1)}
-        previousLabel="Previous"
-        onChange={(page) => handlePageChange(page)}
-        currentPage={currentPage}
-      />
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+        {renderPageNumbers()}
+      </div>
     </div>
   );
 };
