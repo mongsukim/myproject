@@ -3,5 +3,10 @@
   "complete": "완료 여부",
   "Completed": "완료된 항목 보기",
   "Uncompleted": "미완료된 항목 보기",
-  "SeeAll": "모두 보기"
+  "SeeAll": "모두 보기",
+  "UserList": "유저 목록",
+  "Board": "게시판",
+  "TodoList": "할일 목록",
+  "Home": "홈",
+  "SearchPlaceHolder": "Search for your username. ex) ‘Kim’, ‘Lee’"
 }

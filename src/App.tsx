@@ -9,11 +9,14 @@ import { RecoilRoot } from 'recoil';
 import UserDetail from './components/views/UserDetail';
 import PostDetail from './components/views/PostDetail';
 import '../src/index.css';
+import Navigation from './components/Navigation';
 
 function App() {
   return (
     <RecoilRoot>
       <Router>
+        <Navigation />
+
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/BoardListPage" element={<BoardListPage />} />

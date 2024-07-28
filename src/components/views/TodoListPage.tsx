@@ -7,16 +7,8 @@ import { useTranslation } from 'react-i18next';
 const TodoListPage = () => {
   const { t, i18n } = useTranslation('main');
 
-  const toggleLocales = useCallback(
-    (locale: string) => {
-      i18n.changeLanguage(locale);
-    },
-    [i18n]
-  );
-
   const [todos, setTodos] = useState([]);
   const [filter, setFilter] = useState('all'); // 필터 상태 추가
-  console.log('filter', filter);
 
   useEffect(() => {
     axios
@@ -39,14 +31,6 @@ const TodoListPage = () => {
 
   return (
     <div>
-      한영전환 :
-      <button onClick={() => toggleLocales('en-US')} title="영어로 바꾸기">
-        EN
-      </button>
-      &nbsp;|&nbsp;
-      <button onClick={() => toggleLocales('ko-KR')} title="한글로 바꾸기">
-        KO
-      </button>
       <div className="filter-buttons mt-[20px]">
         <button
           className={`${filter === 'all' ? 'font-bold' : ''}`}
