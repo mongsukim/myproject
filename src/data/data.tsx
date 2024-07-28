@@ -2,8 +2,11 @@
  * @jsxRuntime classic
  * @jsx jsx
  */
-import { useEffect, useState, type FC, type ReactNode } from 'react';
-import { useRecoilValue, useRecoilState } from 'recoil';
+
+import React from 'react';
+
+import { useEffect, useState } from 'react';
+import { useRecoilState } from 'recoil';
 
 import { css, jsx } from '@emotion/react';
 import kebabCase from 'lodash/kebabCase';
@@ -83,6 +86,8 @@ export const createHead = (withWidth: boolean) => {
 
 const DataTable: FC = () => {
   const [presidents, setPresidents] = useRecoilState(userListState);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     axios
@@ -90,9 +95,14 @@ const DataTable: FC = () => {
       .then((response) => {
         console.log('response', response?.data);
         setPresidents(Array.isArray(response.data) ? response.data : []);
+        setLoading(false);
       })
-      .catch((error) => console.log(error));
-  }, []);
+      .catch((error) => {
+        console.error('Error fetching user data:', error);
+        setError(error);
+        setLoading(false);
+      });
+  }, [setPresidents]);
 
   const head = createHead(true);
 
@@ -108,7 +118,7 @@ const DataTable: FC = () => {
                 <AvatarWrapper>
                   <Avatar name={president.name} size="medium" />
                 </AvatarWrapper>
-                <Link to={`/profile/${president.id}`}>{president.name}</Link>
+                <Link to={`/UserDetail/${president.id}`}>{president.name}</Link>
               </NameWrapper>
             ),
           },
@@ -119,7 +129,7 @@ const DataTable: FC = () => {
             content: (
               <DropdownMenu trigger="More" label={`More about ${president.name}`}>
                 <DropdownItemGroup>
-                  <DropdownItem>{president.name}</DropdownItem>
+                  <DropdownItem> </DropdownItem>
                 </DropdownItemGroup>
               </DropdownMenu>
             ),
@@ -127,6 +137,9 @@ const DataTable: FC = () => {
         ],
       }))
     : [];
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error loading data: {error.message}</div>;
 
   return (
     <div>

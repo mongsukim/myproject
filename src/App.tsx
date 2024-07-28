@@ -6,6 +6,7 @@ import TodoListPage from './components/views/TodoListPage';
 import UserListPage from './components/views/UserListPage';
 import Home from './components/views/Home';
 import { RecoilRoot } from 'recoil';
+import UserDetail from './components/views/UserDetail';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/BoardListPage" element={<BoardListPage />} />
           <Route path="/TodoListPage" element={<TodoListPage />} />
           <Route path="/UserListPage" element={<UserListPage />} />
+          <Route path="/UserDetail/:id" element={<UserDetail />} />
         </Routes>
       </Router>
     </RecoilRoot>
