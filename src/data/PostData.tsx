@@ -77,6 +77,37 @@ export const createHead = (withWidth: boolean) => {
   };
 };
 
+const AutoComplete: FC<{
+  suggestions: string[];
+  onSuggestionSelect: (suggestion: string) => void;
+}> = ({ suggestions, onSuggestionSelect }) => {
+  return (
+    <ul
+      style={{
+        border: '1px solid #ccc',
+        maxHeight: '100px',
+        overflowY: 'auto',
+        position: 'absolute',
+        zIndex: 1,
+        background: '#fff',
+        width: '100%',
+      }}
+    >
+      {suggestions.map((suggestion, index) => (
+        <li
+          key={index}
+          onClick={() => onSuggestionSelect(suggestion)}
+          className="p-[10px] cursor-pointer border-b-[1px] hover:bg-amber-200
+          
+          "
+        >
+          {suggestion}
+        </li>
+      ))}
+    </ul>
+  );
+};
+
 const DataTable: FC = () => {
   const [presidents, setPresidents] = useRecoilState(userListState);
   const [loading, setLoading] = useState(true);
@@ -88,6 +119,8 @@ const DataTable: FC = () => {
 
   // Search state
   const [searchTerm, setSearchTerm] = useState('');
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
     axios
@@ -113,7 +146,7 @@ const DataTable: FC = () => {
 
   // Filter posts based on search term
   const filteredPresidents = presidentsArray.filter((president) =>
-    president.title.toLowerCase().includes(searchTerm.toLowerCase())
+    president.title?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Slice the posts array to get the posts for the current page
@@ -191,19 +224,45 @@ const DataTable: FC = () => {
     return pageNumbers;
   };
 
+  const handleSearchTermChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    if (value.length > 0) {
+      const filteredSuggestions = presidentsArray
+        .map((president) => president.title)
+        .filter((title) => title && title.toLowerCase().includes(value.toLowerCase()));
+      setSuggestions(filteredSuggestions);
+      setShowSuggestions(true);
+    } else {
+      setShowSuggestions(false);
+    }
+  };
+
+  const handleSuggestionSelect = (suggestion: string) => {
+    setSearchTerm(suggestion);
+    setShowSuggestions(false);
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error loading data: {error.message}</div>;
 
   return (
     <div>
-      <h1>게시글 목록</h1>
-      <input
-        type="text"
-        placeholder="검색어를 입력하세요"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        style={{ marginBottom: '20px', padding: '10px', width: '100%' }}
-      />
+      <div className="relative mb-[20px] inline-block w-[70%]">
+        <input
+          type="text"
+          placeholder="검색할 게시물 제목을 입력하세요"
+          value={searchTerm}
+          onChange={handleSearchTermChange}
+          className="p-[10px] w-full border border-b-[1px] border-solid"
+        />
+        {showSuggestions && (
+          <AutoComplete
+            suggestions={suggestions}
+            onSuggestionSelect={handleSuggestionSelect}
+          />
+        )}
+      </div>
       <table>
         <thead>
           <tr>
