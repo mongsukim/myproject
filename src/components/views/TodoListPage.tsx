@@ -1,9 +1,18 @@
 /* eslint-disable @atlaskit/design-system/ensure-design-token-usage */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 const TodoListPage = () => {
+  const { t, i18n } = useTranslation('main');
+
+  const toggleLocales = useCallback(
+    (locale: string) => {
+      i18n.changeLanguage(locale);
+    },
+    [i18n]
+  );
   const [todos, setTodos] = useState();
   useEffect(() => {
     axios
@@ -19,10 +28,18 @@ const TodoListPage = () => {
 
   return (
     <div>
+      한영전환 :
+      <button onClick={() => toggleLocales('en-US')} title="영어로 바꾸기">
+        EN
+      </button>
+      &nbsp;|&nbsp;
+      <button onClick={() => toggleLocales('ko-KR')} title="한글로 바꾸기">
+        KO
+      </button>
       <div className=" mt-[100px] w-[700px] mx-auto outline outline-1 outline-gray-500">
         <div className="flex py-[10px] justify-center border border-b-[1px] border-solid ">
-          <div className="w-1/5 flex justify-center">완료 여부</div>
-          <div className="w-4/5 flex justify-center">할 일</div>
+          <div className="w-1/5 flex justify-center">{t('complete')}</div>
+          <div className="w-4/5 flex justify-center">{t('todo')}</div>
         </div>
         {todos?.map((item, index) => (
           <div
