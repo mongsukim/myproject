@@ -4,21 +4,24 @@
   "private": true,
   "dependencies": {
     "@atlaskit/atlassian-navigation": "^4.3.2",
+    "@atlaskit/avatar": "^21.11.2",
     "@atlaskit/button": "^19.1.0",
     "@atlaskit/css-reset": "^6.9.2",
+    "@atlaskit/dropdown-menu": "^12.14.2",
     "@atlaskit/tokens": "^1.56.2",
     "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.5.2",
     "@types/node": "^16.18.104",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "axios": "^1.7.2",
     "prettier": "^3.3.3",
     "react": "^16.14.0",
     "react-dom": "16.8",
     "react-router-dom": "^6.25.1",
     "react-scripts": "^5.0.1",
+    "recoil": "^0.7.7",
     "typescript": "^3.2.1",
     "web-vitals": "^2.1.4"
   },
@@ -49,6 +52,7 @@
   "devDependencies": {
     "@atlaskit/eslint-plugin-design-system": "^10.12.0",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@types/lodash": "^4.17.7",
     "ajv": "^7.2.4"
   }
 }

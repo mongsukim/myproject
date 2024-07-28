@@ -1,11 +1,10 @@
 import React from 'react';
-import MainLayout from '../layout/MainLayout';
+import DataTable from '../../data/data';
 
 const UserListPage = () => {
   return (
     <>
-      <MainLayout />
-      UserListPage
+      <DataTable />
     </>
   );
 };
