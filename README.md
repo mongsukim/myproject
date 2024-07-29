@@ -9,7 +9,7 @@
 - API 사이트 : [Korean JSON](https://koreanjson.com/)  
 - 디자인 사이트 : [Overview - Get started - Atlassian Design System](https://atlassian.design/components/)  
 
-- 배포 주소 : 
+- 배포 주소 : http://developermong.dothome.co.kr/myproject/index.html
 
 - 사용:
 
