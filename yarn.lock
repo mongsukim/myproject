@@ -211,6 +211,16 @@
     "@babel/runtime" "^7.0.0"
     "@emotion/react" "^11.7.1"
 
+"@atlaskit/heading@^2.4.4":
+  version "2.4.4"
+  resolved "https://registry.npmjs.org/@atlaskit/heading/-/heading-2.4.4.tgz"
+  integrity sha512-buhkOGFlVcSoXmV0BVsrJivtOcPQ5T5HWTRns1snWWSiDICy35GXL1Xpk+FUWnjLTYHpFDJKY+WQDQ57HbMwmw==
+  dependencies:
+    "@atlaskit/primitives" "^11.0.0"
+    "@atlaskit/tokens" "^1.53.0"
+    "@babel/runtime" "^7.0.0"
+    "@emotion/react" "^11.7.1"
+
 "@atlaskit/icon@^22.6.0", "@atlaskit/icon@^22.7.0":
   version "22.7.0"
   resolved "https://registry.npmjs.org/@atlaskit/icon/-/icon-22.7.0.tgz"

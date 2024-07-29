@@ -8,6 +8,7 @@
     "@atlaskit/button": "^19.1.0",
     "@atlaskit/css-reset": "^6.9.2",
     "@atlaskit/dropdown-menu": "^12.14.2",
+    "@atlaskit/heading": "^2.4.4",
     "@atlaskit/pagination": "^14.7.9",
     "@atlaskit/tokens": "^1.56.2",
     "@testing-library/jest-dom": "^5.17.0",
