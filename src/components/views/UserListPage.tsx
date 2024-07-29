@@ -7,6 +7,7 @@ import { userListState } from '../../atom/userListAtom';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Button from '@atlaskit/button/new';
+import { useTranslation } from 'react-i18next';
 
 interface Users {
   id: number;
@@ -20,31 +21,33 @@ function createKey(input: string) {
 }
 
 export const createHead = (withWidth: boolean) => {
+  const { t } = useTranslation('main');
+
   return {
     cells: [
       {
-        key: 'name',
-        content: 'Name',
+        key: 'Name',
+        content: `${t(`Name`)}`,
         isSortable: true,
         width: withWidth ? 25 : undefined,
       },
       {
-        key: 'province',
-        content: 'Province',
+        key: 'Province',
+        content: `${t(`Province`)}`,
         shouldTruncate: true,
         isSortable: true,
         width: withWidth ? 15 : undefined,
       },
       {
         key: 'phone',
-        content: 'Phone',
+        content: `${t(`Phone`)}`,
         shouldTruncate: true,
         isSortable: true,
         width: withWidth ? 10 : undefined,
       },
       {
         key: 'edit',
-        content: 'edit',
+        content: `${t(`Edit`)}`,
       },
     ],
   };
@@ -204,8 +207,8 @@ const UserListPage: FC = () => {
   if (error) return <div>Error loading data: {error.message}</div>;
 
   return (
-    <div>
-      <div className="relative mb-[20px] inline-block w-[70%]">
+    <div className="px-[20px] md:px-[40px]">
+      <div className="mt-[50px] relative mb-[20px] inline-block w-[70%]">
         <input
           type="text"
           placeholder="사용자 이름을 검색하세요. ex) '김','이'"

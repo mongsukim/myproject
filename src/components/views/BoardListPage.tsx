@@ -8,6 +8,8 @@ import { Box, xcss } from '@atlaskit/primitives';
 import { userListState } from '../../atom/userListAtom';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import Button from '@atlaskit/button/new';
 
 interface BoardList {
   UserId: number;
@@ -39,11 +41,13 @@ const AvatarWrapper: FC<{ children: ReactNode }> = ({ children }) => (
 );
 
 export const createHead = (withWidth: boolean) => {
+  const { t } = useTranslation('main');
+
   return {
     cells: [
       {
         key: 'id',
-        content: 'ID',
+        content: 'id',
         isSortable: true,
         width: withWidth ? 25 : undefined,
       },
@@ -64,7 +68,6 @@ export const createHead = (withWidth: boolean) => {
       {
         key: 'more',
         content: 'Actions',
-        shouldTruncate: true,
       },
     ],
   };
@@ -102,6 +105,8 @@ const AutoComplete: FC<{
 };
 
 const BoardListPage: FC = () => {
+  const { t } = useTranslation('main');
+
   const [presidents, setPresidents] = useRecoilState(userListState);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -171,9 +176,12 @@ const BoardListPage: FC = () => {
       {
         key: createKey(contents.id.toString()), // Convert 'id' to string
         content: contents.id,
+        translate: `${t(`Id`)}`,
       },
       {
         key: createKey(contents.title),
+        translate: `${t(`Title`)}`,
+
         content: (
           <NameWrapper>
             <Link to={`/PostDetail/${contents.id}`}>
@@ -191,11 +199,9 @@ const BoardListPage: FC = () => {
       {
         key: `MoreDropdown-${contents.id}`, // Use unique key for dropdown
         content: (
-          <DropdownMenu trigger="More" label={`More about ${contents.title}`}>
-            <DropdownItemGroup>
-              <DropdownItem> </DropdownItem>
-            </DropdownItemGroup>
-          </DropdownMenu>
+          <Link to={`/PostDetail/${contents.id}`}>
+            <Button>{t(`See`)}</Button>
+          </Link>
         ),
       },
     ],
@@ -250,14 +256,15 @@ const BoardListPage: FC = () => {
   if (error) return <div>Error loading data: {error.message}</div>;
 
   return (
-    <div>
-      <div className="relative mb-[20px] inline-block w-[70%]">
+    <div className="px-[20px] md:px-[40px]">
+      {/*검색창*/}
+      <div className="mt-[50px] relative mb-[20px] inline-block w-[70%]">
         <input
           type="text"
-          placeholder="검색할 게시물 제목을 입력하세요"
+          placeholder={t(`SearchContentTitle`)}
           value={searchTerm}
           onChange={handleSearchTermChange}
-          className="p-[10px] w-full border border-b-[1px] border-solid"
+          className="p-[10px] inline-block  w-full border border-b-[1px] border-solid"
         />
         {showSuggestions && (
           <AutoComplete
@@ -266,23 +273,25 @@ const BoardListPage: FC = () => {
           />
         )}
       </div>
+
+      {/*날짜필터*/}
       <div className="date-filters mb-[20px]">
         <label>
-          Start Date:
+          {t(`StartDate`)}
           <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="p-[10px] border border-b-[1px] border-solid"
+            className="cursor-pointer inline-block p-[10px] border border-b-[1px] border-solid"
           />
         </label>
         <label className="ml-[20px]">
-          End Date:
+          {t(`EndDate`)}
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="p-[10px] border border-b-[1px] border-solid"
+            className="cursor-pointer inline-block p-[10px] border border-b-[1px] border-solid"
           />
         </label>
       </div>

@@ -8,5 +8,22 @@
   "Board": "Board",
   "TodoList": "Todo List",
   "Home": "Home",
-  "SearchPlaceHolder": "사용자 이름을 검색하세요. ex) '김','이'"
+  "SearchPlaceHolder": "사용자 이름을 검색하세요. ex) '김','이'",
+  "Name": "Name",
+  "Province": "Province",
+  "Phone": "Phone",
+  "Edit": "Edit",
+  "StartDate": "Start Date",
+  "EndDate": "End Date",
+  "Id": "Id",
+  "Title": "Title",
+  "CreateAt": "Create At",
+  "Action": "Action",
+  "See": "See",
+  "SearchContentTitle": "Enter the post you want to search for",
+  "Email": "E-mail",
+  "WebSite": "WebSite",
+  "UserDetail": "User Detail",
+  "Save": "Save",
+  "Cancel": "Cancel"
 }

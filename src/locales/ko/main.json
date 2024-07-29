@@ -8,5 +8,22 @@
   "Board": "게시판",
   "TodoList": "할일 목록",
   "Home": "홈",
-  "SearchPlaceHolder": "Search for your username. ex) ‘Kim’, ‘Lee’"
+  "SearchPlaceHolder": "Search for your username. ex) ‘Kim’, ‘Lee’",
+  "Name": "이름",
+  "Province": "지역",
+  "Phone": "번호",
+  "Edit": "수정",
+  "StartDate": "시작날짜",
+  "EndDate": "종료날짜",
+  "Id": "아이디",
+  "Title": "제목",
+  "CreateAt": "생성일",
+  "Action": "Action",
+  "See": "게시글 보기",
+  "SearchContentTitle": "검색할 게시물 제목을 입력하세요",
+  "Email": "이메일",
+  "WebSite": "웹사이트",
+  "UserDetail": "유저 상세보기",
+  "Save": "저장",
+  "Cancel": "취소"
 }

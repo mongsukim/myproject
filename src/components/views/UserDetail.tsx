@@ -3,8 +3,11 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Button from '@atlaskit/button/new';
 import Heading from '@atlaskit/heading';
+import { useTranslation } from 'react-i18next';
 
 const UserDetail = () => {
+  const { t } = useTranslation('main');
+
   const { id } = useParams();
   const [user, setUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -48,13 +51,14 @@ const UserDetail = () => {
 
   return (
     <div className="my-[50px] px-[20px] md:px-[40px] lg:w-[800px] mx-auto">
-      <Heading size="xlarge">User Detail</Heading>
-      <hr className="block py-[5px]" />
-
+      <Heading size="xlarge">{t(`UserDetail`)}</Heading>
+      <div className="py-[20px]">
+        <hr />
+      </div>
       {isEditing ? (
         <div>
           <label>
-            Name:
+            {t(`Name`)}:
             <input
               className="border border-1 inline-block px-[5px]"
               type="text"
@@ -65,7 +69,7 @@ const UserDetail = () => {
           </label>
           <br />
           <label>
-            Email:
+            {t(`Email`)}:
             <input
               className="border border-1 inline-block px-[5px]"
               type="email"
@@ -76,7 +80,7 @@ const UserDetail = () => {
           </label>
           <br />
           <label>
-            Phone:
+            {t(`Phone`)}:
             <input
               className="border border-1 inline-block px-[5px]"
               type="text"
@@ -87,7 +91,7 @@ const UserDetail = () => {
           </label>
           <br />
           <label>
-            Website:
+            {t(`WebSite`)}:
             <input
               className="border border-1 inline-block px-[5px]"
               type="text"
@@ -98,29 +102,29 @@ const UserDetail = () => {
           </label>
           <br />
           <div className="flex space-x-[10px]">
-            <Button onClick={handleSave}>Save</Button>
-            <Button onClick={() => setIsEditing(false)}>Cancel</Button>
+            <Button onClick={handleSave}>{t(`Save`)}</Button>
+            <Button onClick={() => setIsEditing(false)}>{t(`Cancel`)}</Button>
           </div>
         </div>
       ) : (
         <div className=" ">
           <div>
-            <span className="inline-block w-[70px]">Name:</span>
+            <span className="inline-block w-[70px]">{t(`Name`)}:</span>
             {user.name}
           </div>
           <div>
-            <span className="inline-block w-[70px]">Email:</span>
+            <span className="inline-block w-[70px]">{t(`Email`)}:</span>
             {user.email}
           </div>
           <div>
-            <span className="inline-block w-[70px]">Phone:</span>
+            <span className="inline-block w-[70px]">{t(`Phone`)}:</span>
             {user.phone}
           </div>
           <div>
-            <span className="inline-block w-[70px]">Website:</span>
+            <span className="inline-block w-[70px]"> {t(`WebSite`)}:</span>
             {user.website}
           </div>
-          <Button onClick={() => setIsEditing(true)}>Edit</Button>
+          <Button onClick={() => setIsEditing(true)}>{t(`Edit`)}</Button>
         </div>
       )}
     </div>
