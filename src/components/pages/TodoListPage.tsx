@@ -49,7 +49,7 @@ const TodoListPage = () => {
             >
               {/*미완료된 할일*/}
               <div>
-                <img src="/images/checkbox-blank-line.png" alt="완료" />
+                <img src="/myproject/images/checkbox-blank-line.png" alt="완료" />
               </div>
               <div className="text-[11px]">{t('Uncompleted')}</div>
             </button>
@@ -60,7 +60,7 @@ const TodoListPage = () => {
             >
               {/*완료된 할일*/}
               <div>
-                <img src="/images/checkbox-line.png" alt="미완료" />
+                <img src="/myproject/images/checkbox-line.png" alt="미완료" />
               </div>
               <div className="text-[11px]">{t('Completed')}</div>
             </button>
@@ -75,11 +75,11 @@ const TodoListPage = () => {
             <div className="w-1/5 flex justify-center">
               {item.completed ? (
                 <div>
-                  <img src="/images/checkbox-blank-line.png" alt="완료" />
+                  <img src="/myproject/images/checkbox-blank-line.png" alt="완료" />
                 </div>
               ) : (
                 <div>
-                  <img src="/images/checkbox-line.png" alt="미완료" />
+                  <img src="/myproject/images/checkbox-line.png" alt="미완료" />
                 </div>
               )}
             </div>

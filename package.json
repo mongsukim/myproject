@@ -2,6 +2,7 @@
   "name": "myproject",
   "version": "0.1.0",
   "private": true,
+  "homepage": "http://developermong.dothome.co.kr/myproject/",
   "dependencies": {
     "@atlaskit/atlassian-navigation": "^4.3.2",
     "@atlaskit/avatar": "^21.11.2",

@@ -99,7 +99,7 @@ const BoardListPage: FC = () => {
   // Ensure posts is an array
   const postArray = Array.isArray(posts) ? posts : [];
 
-  // Filter posts based on search term and date range
+  // 달력 필터 함수
   const filtered = postArray.filter((content) => {
     const contentDate = new Date(content.createdAt);
     const start = startDate ? new Date(startDate) : new Date('1900-01-01');
@@ -206,6 +206,7 @@ const BoardListPage: FC = () => {
           }
           className="p-[10px] inline-block  w-full border border-b-[1px] border-solid"
         />
+        {/*자동완성기능*/}
         {showSuggestions && (
           <AutoComplete
             suggestions={suggestions}

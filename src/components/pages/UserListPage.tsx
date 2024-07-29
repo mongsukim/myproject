@@ -14,6 +14,7 @@ import {
   setShowSuggestionState,
   setSuggestionState,
 } from '../../atom/atoms';
+import { createKey } from '../../function/createKey';
 
 interface Users {
   id: number;
@@ -165,6 +166,7 @@ const UserListPage: FC = () => {
 
   return (
     <div className="px-[20px] md:px-[40px]">
+      {/*검색창*/}
       <div className="mt-[50px] relative mb-[20px] inline-block w-[70%]">
         <input
           type="text"
@@ -181,6 +183,7 @@ const UserListPage: FC = () => {
           }
           className="p-[10px] w-full border border-b-[1px] border-solid"
         />
+        {/*자동완성기능*/}
         {showSuggestions && (
           <AutoComplete
             suggestions={suggestions}
