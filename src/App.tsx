@@ -16,7 +16,6 @@ function App() {
     <RecoilRoot>
       <Router>
         <Navigation />
-
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/BoardListPage" element={<BoardListPage />} />

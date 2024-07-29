@@ -17,10 +17,6 @@ const Navigation = () => {
   return (
     <div className="px-[20px] flex w-full items-center justify-between border-b-[1px] border-solid">
       <nav className="p-[10px]   ">
-        <Link to="/" style={{ marginRight: '10px' }}>
-          {/*Home*/}
-          {t('Home')}
-        </Link>
         <Link to="/BoardListPage" style={{ marginRight: '10px' }}>
           {/*Board List*/}
           {t('Board')}

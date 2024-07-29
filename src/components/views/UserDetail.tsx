@@ -49,6 +49,7 @@ const UserDetail = () => {
   return (
     <div className="my-[50px] px-[20px] md:px-[40px] lg:w-[800px] mx-auto">
       <Heading size="xlarge">User Detail</Heading>
+      <hr className="block py-[5px]" />
 
       {isEditing ? (
         <div>
@@ -102,11 +103,23 @@ const UserDetail = () => {
           </div>
         </div>
       ) : (
-        <div>
-          <p>Name: {user.name}</p>
-          <p>Email: {user.email}</p>
-          <p>Phone: {user.phone}</p>
-          <p>Website: {user.website}</p>
+        <div className=" ">
+          <div>
+            <span className="inline-block w-[70px]">Name:</span>
+            {user.name}
+          </div>
+          <div>
+            <span className="inline-block w-[70px]">Email:</span>
+            {user.email}
+          </div>
+          <div>
+            <span className="inline-block w-[70px]">Phone:</span>
+            {user.phone}
+          </div>
+          <div>
+            <span className="inline-block w-[70px]">Website:</span>
+            {user.website}
+          </div>
           <Button onClick={() => setIsEditing(true)}>Edit</Button>
         </div>
       )}
