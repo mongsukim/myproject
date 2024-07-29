@@ -12,10 +12,12 @@ const PostDetail: FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [editingPost, setEditingPost] = useState<boolean>(false);
+  const [postContent, setPostContent] = useState<string>('');
 
   const formDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toISOString().split('T')[0]; // Extract date part from ISO string
+    return date.toISOString().split('T')[0];
   };
 
   useEffect(() => {
@@ -30,6 +32,7 @@ const PostDetail: FC = () => {
         ]);
 
         setUser(postResponse.data);
+        setPostContent(postResponse.data.content);
         setComments(commentsResponse.data);
       } catch (error) {
         setError('Error fetching data');
@@ -60,7 +63,13 @@ const PostDetail: FC = () => {
     const comment = comments.find((comment) => comment.id === commentId);
     if (comment) {
       try {
-        await axios.put(`https://koreanjson.com/comments/${commentId}`, comment);
+        await axios
+          .put(`https://koreanjson.com/comments/${commentId}`, comment)
+          .then((res) =>
+            alert(
+              '댓글 수정요청을 보냈습니다. https://koreanjson.com/comments/${commentId}'
+            )
+          );
         setEditingCommentId(null);
       } catch (error) {
         console.error('Error updating comment:', error);
@@ -69,14 +78,20 @@ const PostDetail: FC = () => {
     }
   };
 
-  //게시글 수정
-
-  const handleSaveContents = async (commentId: number) => {
+  const handleSaveContents = async () => {
     try {
-      await axios.put(`https://koreanjson.com/posts/${id}`);
+      await axios
+        .put(`https://koreanjson.com/posts/${id}`, {
+          ...user,
+          content: postContent,
+        })
+        .then((res) =>
+          alert('게시물 수정요청을 보냈습니다. https://koreanjson.com/posts/${id}')
+        );
+      setEditingPost(false);
     } catch (error) {
-      console.error('Error updating comment:', error);
-      setError('Error updating comment');
+      console.error('Error updating post:', error);
+      setError('Error updating post');
     }
   };
 
@@ -96,7 +111,19 @@ const PostDetail: FC = () => {
           </div>
           <Heading size="xlarge">{user.title}</Heading>
           <hr className="my-[30px]" />
-          <p>Content: {user.content}</p>
+          {editingPost ? (
+            <>
+              <textarea
+                className="w-full outline outline-1"
+                value={postContent}
+                onChange={(e) => setPostContent(e.target.value)}
+              />
+              <Button onClick={handleSaveContents}>저장</Button>
+            </>
+          ) : (
+            <p>Content: {user.content}</p>
+          )}
+          <Button onClick={() => setEditingPost(!editingPost)}>게시글 수정</Button>
         </>
       )}
 
@@ -118,7 +145,7 @@ const PostDetail: FC = () => {
               {editingCommentId === comment.id ? (
                 <>
                   <input
-                    className="inline-block outline outline-1 w-full "
+                    className="inline-block outline outline-1 w-full"
                     value={comment.content}
                     onChange={(event) => handleCommentChange(event, comment.id)}
                   />
