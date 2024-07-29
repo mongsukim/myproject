@@ -1,13 +1,21 @@
 /* eslint-disable @atlaskit/design-system/ensure-design-token-usage */
 
-import React, { FC, ReactNode, useEffect, useState } from 'react';
-import { css } from '@emotion/react';
-import { Box, xcss } from '@atlaskit/primitives';
+import React, { FC, useEffect, useState } from 'react';
+import { useRecoilState } from 'recoil';
+
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Button from '@atlaskit/button/new';
 import { AutoComplete } from '../AutoComplete';
+import {
+  searchTermState,
+  setShowSuggestionState,
+  setSuggestionState,
+} from '../../atom/atoms';
+import { handleSearchTermChange } from '../../function/handleSearchTermChange';
+import { formDate } from '../../function/formDate';
+import { createKey } from '../../function/createKey';
 
 interface BoardList {
   UserId: number;
@@ -16,27 +24,6 @@ interface BoardList {
   content: string | number;
   createdAt: string;
 }
-
-function createKey(input: string) {
-  return input ? input.replace(/^(the|a|an)/, '').replace(/\s/g, '') : input;
-}
-
-const nameWrapperStyles = css({
-  display: 'flex',
-  alignItems: 'center',
-});
-
-const NameWrapper: FC<{ children: ReactNode }> = ({ children }) => (
-  <span css={nameWrapperStyles}>{children}</span>
-);
-
-const avatarWrapperStyles = xcss({
-  marginInlineEnd: 'space.100',
-});
-
-const AvatarWrapper: FC<{ children: ReactNode }> = ({ children }) => (
-  <Box xcss={avatarWrapperStyles}>{children}</Box>
-);
 
 export const createHead = (withWidth: boolean) => {
   const { t } = useTranslation('main');
@@ -73,8 +60,8 @@ export const createHead = (withWidth: boolean) => {
 
 const BoardListPage: FC = () => {
   const { t } = useTranslation('main');
+  const [posts, setPosts] = useState();
 
-  const [presidents, setPresidents] = useState();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -82,10 +69,10 @@ const BoardListPage: FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(10);
 
-  // Search state
-  const [searchTerm, setSearchTerm] = useState('');
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  //  state
+  const [searchTerm, setSearchTerm] = useRecoilState(searchTermState);
+  const [suggestions, setSuggestions] = useRecoilState(setSuggestionState);
+  const [showSuggestions, setShowSuggestions] = useRecoilState(setShowSuggestionState);
 
   // Date filter state
   const [startDate, setStartDate] = useState('');
@@ -95,8 +82,7 @@ const BoardListPage: FC = () => {
     axios
       .get('https://koreanjson.com/Posts')
       .then((response) => {
-        console.log('response', response?.data);
-        setPresidents(Array.isArray(response.data) ? response.data : []);
+        setPosts(Array.isArray(response.data) ? response.data : []);
         setLoading(false);
       })
       .catch((error) => {
@@ -104,17 +90,17 @@ const BoardListPage: FC = () => {
         setError(error);
         setLoading(false);
       });
-  }, [setPresidents]);
+  }, [setPosts]);
 
   // Calculate index of last and first post on current page
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
 
-  // Ensure presidents is an array
-  const presidentsArray = Array.isArray(presidents) ? presidents : [];
+  // Ensure posts is an array
+  const postArray = Array.isArray(posts) ? posts : [];
 
   // Filter posts based on search term and date range
-  const filteredPresidents = presidentsArray.filter((content) => {
+  const filtered = postArray.filter((content) => {
     const contentDate = new Date(content.createdAt);
     const start = startDate ? new Date(startDate) : new Date('1900-01-01');
     const end = endDate ? new Date(endDate) : new Date();
@@ -126,15 +112,10 @@ const BoardListPage: FC = () => {
   });
 
   // Slice the posts array to get the posts for the current page
-  const currentPosts = filteredPresidents.slice(indexOfFirstPost, indexOfLastPost);
+  const currentPosts = filtered.slice(indexOfFirstPost, indexOfLastPost);
 
   // Create table head
   const head = createHead(true);
-
-  const formDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toISOString().split('T')[0]; // Extract the date part (YYYY-MM-DD)
-  };
 
   const rows = currentPosts.map((contents: BoardList) => ({
     key: contents.id, // Use unique 'id' as key
@@ -150,13 +131,11 @@ const BoardListPage: FC = () => {
         translate: `${t(`Title`)}`,
 
         content: (
-          <NameWrapper>
-            <Link to={`/PostDetail/${contents.id}`}>
-              {contents.title.length > 20
-                ? `${contents.title.slice(0, 20)}...`
-                : contents.title}
-            </Link>
-          </NameWrapper>
+          <Link to={`/PostDetail/${contents.id}`}>
+            {contents.title.length > 20
+              ? `${contents.title.slice(0, 20)}...`
+              : contents.title}
+          </Link>
         ),
       },
       {
@@ -180,7 +159,7 @@ const BoardListPage: FC = () => {
 
   const renderPageNumbers = () => {
     const pageNumbers = [];
-    for (let i = 1; i <= Math.ceil(filteredPresidents.length / postsPerPage); i++) {
+    for (let i = 1; i <= Math.ceil(filtered.length / postsPerPage); i++) {
       pageNumbers.push(
         <button
           key={i}
@@ -200,20 +179,6 @@ const BoardListPage: FC = () => {
     return pageNumbers;
   };
 
-  const handleSearchTermChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchTerm(value);
-    if (value.length > 0) {
-      const filteredSuggestions = presidentsArray
-        .map((content) => content.title)
-        .filter((title) => title && title.toLowerCase().includes(value.toLowerCase()));
-      setSuggestions(filteredSuggestions);
-      setShowSuggestions(true);
-    } else {
-      setShowSuggestions(false);
-    }
-  };
-
   const handleSuggestionSelect = (suggestion: string) => {
     setSearchTerm(suggestion);
     setShowSuggestions(false);
@@ -230,7 +195,15 @@ const BoardListPage: FC = () => {
           type="text"
           placeholder={t(`SearchContentTitle`)}
           value={searchTerm}
-          onChange={handleSearchTermChange}
+          onChange={(e) =>
+            handleSearchTermChange(
+              e,
+              postArray,
+              setSearchTerm,
+              setSuggestions,
+              setShowSuggestions
+            )
+          }
           className="p-[10px] inline-block  w-full border border-b-[1px] border-solid"
         />
         {showSuggestions && (

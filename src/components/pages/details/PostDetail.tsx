@@ -4,6 +4,7 @@ import axios from 'axios';
 import Avatar from '@atlaskit/avatar';
 import Button from '@atlaskit/button/new';
 import Heading from '@atlaskit/heading';
+import { formDate } from '../../../function/formDate';
 
 const PostDetail: FC = () => {
   const { id } = useParams();
@@ -14,11 +15,6 @@ const PostDetail: FC = () => {
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editingPost, setEditingPost] = useState<boolean>(false);
   const [postContent, setPostContent] = useState<string>('');
-
-  const formDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toISOString().split('T')[0];
-  };
 
   useEffect(() => {
     setLoading(true);

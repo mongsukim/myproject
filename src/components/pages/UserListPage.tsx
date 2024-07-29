@@ -1,22 +1,25 @@
 /* eslint-disable @atlaskit/design-system/ensure-design-token-usage */
 
-import React, { FC, ReactNode, useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import Avatar from '@atlaskit/avatar';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Button from '@atlaskit/button/new';
 import { useTranslation } from 'react-i18next';
 import { AutoComplete } from '../AutoComplete';
+import { handleSearchTermChange } from '../../function/handleSearchTermChange';
+import { useRecoilState } from 'recoil';
+import {
+  searchTermState,
+  setShowSuggestionState,
+  setSuggestionState,
+} from '../../atom/atoms';
 
 interface Users {
   id: number;
   name: string;
   phone: string;
   province: string;
-}
-
-function createKey(input: string) {
-  return input ? input.replace(/^(the|a|an)/, '').replace(/\s/g, '') : input;
 }
 
 export const createHead = (withWidth: boolean) => {
@@ -63,10 +66,10 @@ const UserListPage: FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(3); // Set postsPerPage to 3
 
-  // Search state
-  const [searchTerm, setSearchTerm] = useState('');
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  //  state
+  const [searchTerm, setSearchTerm] = useRecoilState(searchTermState);
+  const [suggestions, setSuggestions] = useRecoilState(setSuggestionState);
+  const [showSuggestions, setShowSuggestions] = useRecoilState(setShowSuggestionState);
 
   useEffect(() => {
     axios
@@ -87,11 +90,11 @@ const UserListPage: FC = () => {
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
 
   // Ensure users is an array
-  const presidentsArray = Array.isArray(users) ? users : [];
+  const postArray = Array.isArray(users) ? users : [];
 
   // Filter posts based on search term
-  const filtered = presidentsArray.filter((president) =>
-    president.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filtered = postArray.filter((contents) =>
+    contents.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Slice the posts array to get the posts for the current page
@@ -100,25 +103,25 @@ const UserListPage: FC = () => {
   // Create table head
   const head = createHead(true);
 
-  const rows = currentPosts.map((president: Users) => ({
-    key: president.id, // Use unique 'id' as key
+  const rows = currentPosts.map((contents: Users) => ({
+    key: contents.id, // Use unique 'id' as key
     isHighlighted: false,
     cells: [
       {
-        key: createKey(president.name),
+        key: createKey(contents.name),
         content: (
           <div className="flex items-center">
-            <Avatar name={president.name} size="medium" />
-            <Link to={`/UserDetail/${president.id}`}>{president.name}</Link>
+            <Avatar name={contents.name} size="medium" />
+            <Link to={`/UserDetail/${contents.id}`}>{contents.name}</Link>
           </div>
         ),
       },
-      { key: createKey(president.province), content: president.province || 'N/A' },
-      { key: createKey(president.phone), content: president.phone },
+      { key: createKey(contents.province), content: contents.province || 'N/A' },
+      { key: createKey(contents.phone), content: contents.phone },
       {
-        key: `MoreDropdown-${president.id}`, // Use unique key for dropdown
+        key: `MoreDropdown-${contents.id}`, // Use unique key for dropdown
         content: (
-          <Link to={`/UserDetail/${president.id}`}>
+          <Link to={`/UserDetail/${contents.id}`}>
             <Button>Edit</Button>
           </Link>
         ),
@@ -152,20 +155,6 @@ const UserListPage: FC = () => {
     return pageNumbers;
   };
 
-  const handleSearchTermChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchTerm(value);
-    if (value.length > 0) {
-      const filteredSuggestions = presidentsArray
-        .map((president) => president.name)
-        .filter((name) => name && name.toLowerCase().includes(value.toLowerCase()));
-      setSuggestions(filteredSuggestions);
-      setShowSuggestions(true);
-    } else {
-      setShowSuggestions(false);
-    }
-  };
-
   const handleSuggestionSelect = (suggestion: string) => {
     setSearchTerm(suggestion);
     setShowSuggestions(false);
@@ -181,7 +170,15 @@ const UserListPage: FC = () => {
           type="text"
           placeholder={t(`SearchPlaceHolder`)}
           value={searchTerm}
-          onChange={handleSearchTermChange}
+          onChange={(e) =>
+            handleSearchTermChange(
+              e,
+              postArray,
+              setSearchTerm,
+              setSuggestions,
+              setShowSuggestions
+            )
+          }
           className="p-[10px] w-full border border-b-[1px] border-solid"
         />
         {showSuggestions && (
