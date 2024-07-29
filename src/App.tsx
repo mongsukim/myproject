@@ -1,13 +1,13 @@
 import React from 'react';
 import '@atlaskit/css-reset';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import BoardListPage from './components/views/BoardListPage';
-import TodoListPage from './components/views/TodoListPage';
-import UserListPage from './components/views/UserListPage';
-import Home from './components/views/Home';
+import BoardListPage from './components/pages/BoardListPage';
+import TodoListPage from './components/pages/TodoListPage';
+import UserListPage from './components/pages/UserListPage';
+import Home from './components/pages/Home';
 import { RecoilRoot } from 'recoil';
-import UserDetail from './components/views/UserDetail';
-import PostDetail from './components/views/PostDetail';
+import UserDetail from './components/pages/details/UserDetail';
+import PostDetail from './components/pages/details/PostDetail';
 import '../src/index.css';
 import Navigation from './components/Navigation';
 

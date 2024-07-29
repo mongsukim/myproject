@@ -2,23 +2,44 @@
 
 import React, { FC, ReactNode, useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
-import Avatar from '@atlaskit/avatar';
+import { css, jsx } from '@emotion/react';
+import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
+import { Box, xcss } from '@atlaskit/primitives';
 import { userListState } from '../../atom/userListAtom';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import Button from '@atlaskit/button/new';
 import { useTranslation } from 'react-i18next';
+import Button from '@atlaskit/button/new';
+import { AutoComplete } from '../AutoComplete';
 
-interface Users {
+interface BoardList {
+  UserId: number;
   id: number;
-  name: string;
-  phone: string;
-  province: string;
+  title: string;
+  content: string | number;
+  createdAt: string;
 }
 
 function createKey(input: string) {
   return input ? input.replace(/^(the|a|an)/, '').replace(/\s/g, '') : input;
 }
+
+const nameWrapperStyles = css({
+  display: 'flex',
+  alignItems: 'center',
+});
+
+const NameWrapper: FC<{ children: ReactNode }> = ({ children }) => (
+  <span css={nameWrapperStyles}>{children}</span>
+);
+
+const avatarWrapperStyles = xcss({
+  marginInlineEnd: 'space.100',
+});
+
+const AvatarWrapper: FC<{ children: ReactNode }> = ({ children }) => (
+  <Box xcss={avatarWrapperStyles}>{children}</Box>
+);
 
 export const createHead = (withWidth: boolean) => {
   const { t } = useTranslation('main');
@@ -26,79 +47,56 @@ export const createHead = (withWidth: boolean) => {
   return {
     cells: [
       {
-        key: 'Name',
-        content: `${t(`Name`)}`,
+        key: 'id',
+        content: 'id',
         isSortable: true,
         width: withWidth ? 25 : undefined,
       },
       {
-        key: 'Province',
-        content: `${t(`Province`)}`,
+        key: 'title',
+        content: 'Title',
+        isSortable: true,
+        width: withWidth ? 25 : undefined,
+      },
+      {
+        key: 'createdAt',
+        content: 'Created At',
         shouldTruncate: true,
         isSortable: true,
         width: withWidth ? 15 : undefined,
       },
+
       {
-        key: 'phone',
-        content: `${t(`Phone`)}`,
-        shouldTruncate: true,
-        isSortable: true,
-        width: withWidth ? 10 : undefined,
-      },
-      {
-        key: 'edit',
-        content: `${t(`Edit`)}`,
+        key: 'more',
+        content: 'Actions',
       },
     ],
   };
 };
 
-const AutoComplete: FC<{
-  suggestions: string[];
-  onSuggestionSelect: (suggestion: string) => void;
-}> = ({ suggestions, onSuggestionSelect }) => {
-  return (
-    <ul
-      style={{
-        border: '1px solid #ccc',
-        maxHeight: '100px',
-        overflowY: 'auto',
-        position: 'absolute',
-        zIndex: 1,
-        background: '#fff',
-        width: '100%',
-      }}
-    >
-      {suggestions.map((suggestion, index) => (
-        <li
-          key={index}
-          onClick={() => onSuggestionSelect(suggestion)}
-          className="p-[10px] cursor-pointer border-b-[1px] hover:bg-amber-200"
-        >
-          {suggestion}
-        </li>
-      ))}
-    </ul>
-  );
-};
+const BoardListPage: FC = () => {
+  const { t } = useTranslation('main');
 
-const UserListPage: FC = () => {
   const [presidents, setPresidents] = useRecoilState(userListState);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const [postsPerPage] = useState(3); // Set postsPerPage to 3
+  const [postsPerPage] = useState(10);
 
   // Search state
   const [searchTerm, setSearchTerm] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
+  // Date filter state
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
   useEffect(() => {
     axios
-      .get('https://koreanjson.com/users')
+      .get('https://koreanjson.com/Posts')
       .then((response) => {
         console.log('response', response?.data);
         setPresidents(Array.isArray(response.data) ? response.data : []);
@@ -118,10 +116,17 @@ const UserListPage: FC = () => {
   // Ensure presidents is an array
   const presidentsArray = Array.isArray(presidents) ? presidents : [];
 
-  // Filter posts based on search term
-  const filteredPresidents = presidentsArray.filter((president) =>
-    president.name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter posts based on search term and date range
+  const filteredPresidents = presidentsArray.filter((content) => {
+    const contentDate = new Date(content.createdAt);
+    const start = startDate ? new Date(startDate) : new Date('1900-01-01');
+    const end = endDate ? new Date(endDate) : new Date();
+    return (
+      content.title?.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      contentDate >= start &&
+      contentDate <= end
+    );
+  });
 
   // Slice the posts array to get the posts for the current page
   const currentPosts = filteredPresidents.slice(indexOfFirstPost, indexOfLastPost);
@@ -129,29 +134,43 @@ const UserListPage: FC = () => {
   // Create table head
   const head = createHead(true);
 
-  const rows = currentPosts.map((president: Users) => ({
-    key: president.id, // Use unique 'id' as key
+  const formDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0]; // Extract the date part (YYYY-MM-DD)
+  };
+
+  const rows = currentPosts.map((contents: BoardList) => ({
+    key: contents.id, // Use unique 'id' as key
     isHighlighted: false,
     cells: [
       {
-        key: createKey(president.name),
+        key: createKey(contents.id.toString()), // Convert 'id' to string
+        content: contents.id,
+        translate: `${t(`Id`)}`,
+      },
+      {
+        key: createKey(contents.title),
+        translate: `${t(`Title`)}`,
+
         content: (
-          <div
-            className="flex items-center
-         "
-          >
-            <Avatar name={president.name} size="medium" />
-            <Link to={`/UserDetail/${president.id}`}>{president.name}</Link>
-          </div>
+          <NameWrapper>
+            <Link to={`/PostDetail/${contents.id}`}>
+              {contents.title.length > 20
+                ? `${contents.title.slice(0, 20)}...`
+                : contents.title}
+            </Link>
+          </NameWrapper>
         ),
       },
-      { key: createKey(president.province), content: president.province || 'N/A' },
-      { key: createKey(president.phone), content: president.phone },
       {
-        key: `MoreDropdown-${president.id}`, // Use unique key for dropdown
+        key: createKey(contents.createdAt),
+        content: formDate(contents.createdAt) || 'N/A',
+      },
+      {
+        key: `MoreDropdown-${contents.id}`, // Use unique key for dropdown
         content: (
-          <Link to={`/UserDetail/${president.id}`}>
-            <Button>Edit</Button>
+          <Link to={`/PostDetail/${contents.id}`}>
+            <Button>{t(`See`)}</Button>
           </Link>
         ),
       },
@@ -189,8 +208,8 @@ const UserListPage: FC = () => {
     setSearchTerm(value);
     if (value.length > 0) {
       const filteredSuggestions = presidentsArray
-        .map((president) => president.name)
-        .filter((name) => name && name.toLowerCase().includes(value.toLowerCase()));
+        .map((content) => content.title)
+        .filter((title) => title && title.toLowerCase().includes(value.toLowerCase()));
       setSuggestions(filteredSuggestions);
       setShowSuggestions(true);
     } else {
@@ -208,13 +227,14 @@ const UserListPage: FC = () => {
 
   return (
     <div className="px-[20px] md:px-[40px]">
+      {/*검색창*/}
       <div className="mt-[50px] relative mb-[20px] inline-block w-[70%]">
         <input
           type="text"
-          placeholder="사용자 이름을 검색하세요. ex) '김','이'"
+          placeholder={t(`SearchContentTitle`)}
           value={searchTerm}
           onChange={handleSearchTermChange}
-          className="p-[10px] w-full border border-b-[1px] border-solid"
+          className="p-[10px] inline-block  w-full border border-b-[1px] border-solid"
         />
         {showSuggestions && (
           <AutoComplete
@@ -222,6 +242,28 @@ const UserListPage: FC = () => {
             onSuggestionSelect={handleSuggestionSelect}
           />
         )}
+      </div>
+
+      {/*날짜필터*/}
+      <div className="date-filters mb-[20px]">
+        <label>
+          {t(`StartDate`)}
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="cursor-pointer inline-block p-[10px] border border-b-[1px] border-solid"
+          />
+        </label>
+        <label className="ml-[20px]">
+          {t(`EndDate`)}
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="cursor-pointer inline-block p-[10px] border border-b-[1px] border-solid"
+          />
+        </label>
       </div>
       <table>
         <thead>
@@ -248,4 +290,4 @@ const UserListPage: FC = () => {
   );
 };
 
-export default UserListPage;
+export default BoardListPage;
