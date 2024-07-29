@@ -70,6 +70,11 @@ source management <br/>
 ***
 ## 2. 시작 방법
 
+![image](https://github.com/user-attachments/assets/391cf987-b2a4-437b-998f-f64c1834a433)
+
+
+0. Download Zip 혹은 주소를 clone하여 사용자의 컴퓨터에 폴더 다운받기 
+
 1. 설치 : ```npm install```
 
 2. 시작 : ```npm start```
