@@ -39,34 +39,40 @@ const TodoListPage = () => {
           {/*모두 보기*/}
           {t('SeeAll')}
         </button>
-        &nbsp;|&nbsp;
-        <button
-          className={`${filter === 'completed' ? 'font-bold' : ''}`}
-          onClick={() => setFilter('completed')}
-        >
-          {/*미완료된 할일*/}
-          {t('Uncompleted')}
-        </button>
-        &nbsp;|&nbsp;
-        <button
-          className={`${filter === 'incomplete' ? 'font-bold' : ''}`}
-          onClick={() => setFilter('incomplete')}
-        >
-          {/*완료된 할일*/}
-          {t('Completed')}
-        </button>
       </div>
       <div className="mt-[20px] w-[700px] mx-auto outline outline-1 outline-gray-500">
         <div className="flex py-[10px] justify-center border border-b-[1px] border-solid">
-          <div className="w-1/5 flex justify-center">{t('complete')}</div>
-          <div className="w-4/5 flex justify-center">{t('todo')}</div>
+          <div className="w-2/5 flex justify-center">
+            <button
+              className={`${filter === 'completed' ? 'font-bold' : ''} flex flex-col items-center`}
+              onClick={() => setFilter('completed')}
+            >
+              {/*미완료된 할일*/}
+              <div>
+                <img src="/images/checkbox-blank-line.png" alt="완료" />
+              </div>
+              <div className="text-[11px]">{t('Uncompleted')}</div>
+            </button>
+            &nbsp;|&nbsp;
+            <button
+              className={`${filter === 'incomplete' ? 'font-bold' : ''}`}
+              onClick={() => setFilter('incomplete')}
+            >
+              {/*완료된 할일*/}
+              <div>
+                <img src="/images/checkbox-line.png" alt="미완료" />
+              </div>
+              <div className="text-[11px]">{t('Completed')}</div>
+            </button>
+          </div>
+          <div className="w-3/5 flex justify-center">{t('todo')}</div>
         </div>
         {filteredTodos.map((item, index) => (
           <div
             key={index}
             className="flex justify-center border border-b-[1px] border-solid py-[5px]"
           >
-            <div className="w-1/5 flex justify-center">
+            <div className="w-2/5 flex justify-center">
               {item.completed ? (
                 <div>
                   <img src="/images/checkbox-blank-line.png" alt="완료" />
@@ -77,7 +83,7 @@ const TodoListPage = () => {
                 </div>
               )}
             </div>
-            <div className="w-4/5">{item.title}</div>
+            <div className="w-3/5">{item.title}</div>
           </div>
         ))}
       </div>
