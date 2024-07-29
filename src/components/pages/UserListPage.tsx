@@ -1,9 +1,7 @@
 /* eslint-disable @atlaskit/design-system/ensure-design-token-usage */
 
 import React, { FC, ReactNode, useEffect, useState } from 'react';
-import { useRecoilState } from 'recoil';
 import Avatar from '@atlaskit/avatar';
-import { userListState } from '../../atom/userListAtom';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import Button from '@atlaskit/button/new';
@@ -55,7 +53,9 @@ export const createHead = (withWidth: boolean) => {
 };
 
 const UserListPage: FC = () => {
-  const [presidents, setPresidents] = useRecoilState(userListState);
+  const { t } = useTranslation('main');
+
+  const [users, setUsers] = useState();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -72,8 +72,7 @@ const UserListPage: FC = () => {
     axios
       .get('https://koreanjson.com/users')
       .then((response) => {
-        console.log('response', response?.data);
-        setPresidents(Array.isArray(response.data) ? response.data : []);
+        setUsers(Array.isArray(response.data) ? response.data : []);
         setLoading(false);
       })
       .catch((error) => {
@@ -81,22 +80,22 @@ const UserListPage: FC = () => {
         setError(error);
         setLoading(false);
       });
-  }, [setPresidents]);
+  }, [setUsers]);
 
   // Calculate index of last and first post on current page
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
 
-  // Ensure presidents is an array
-  const presidentsArray = Array.isArray(presidents) ? presidents : [];
+  // Ensure users is an array
+  const presidentsArray = Array.isArray(users) ? users : [];
 
   // Filter posts based on search term
-  const filteredPresidents = presidentsArray.filter((president) =>
+  const filtered = presidentsArray.filter((president) =>
     president.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // Slice the posts array to get the posts for the current page
-  const currentPosts = filteredPresidents.slice(indexOfFirstPost, indexOfLastPost);
+  const currentPosts = filtered.slice(indexOfFirstPost, indexOfLastPost);
 
   // Create table head
   const head = createHead(true);
@@ -108,10 +107,7 @@ const UserListPage: FC = () => {
       {
         key: createKey(president.name),
         content: (
-          <div
-            className="flex items-center
-         "
-          >
+          <div className="flex items-center">
             <Avatar name={president.name} size="medium" />
             <Link to={`/UserDetail/${president.id}`}>{president.name}</Link>
           </div>
@@ -136,7 +132,7 @@ const UserListPage: FC = () => {
 
   const renderPageNumbers = () => {
     const pageNumbers = [];
-    for (let i = 1; i <= Math.ceil(filteredPresidents.length / postsPerPage); i++) {
+    for (let i = 1; i <= Math.ceil(filtered.length / postsPerPage); i++) {
       pageNumbers.push(
         <button
           key={i}
@@ -183,7 +179,7 @@ const UserListPage: FC = () => {
       <div className="mt-[50px] relative mb-[20px] inline-block w-[70%]">
         <input
           type="text"
-          placeholder="사용자 이름을 검색하세요. ex) '김','이'"
+          placeholder={t(`SearchPlaceHolder`)}
           value={searchTerm}
           onChange={handleSearchTermChange}
           className="p-[10px] w-full border border-b-[1px] border-solid"

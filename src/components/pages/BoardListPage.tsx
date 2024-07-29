@@ -1,11 +1,8 @@
 /* eslint-disable @atlaskit/design-system/ensure-design-token-usage */
 
 import React, { FC, ReactNode, useEffect, useState } from 'react';
-import { useRecoilState } from 'recoil';
-import { css, jsx } from '@emotion/react';
-import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
+import { css } from '@emotion/react';
 import { Box, xcss } from '@atlaskit/primitives';
-import { userListState } from '../../atom/userListAtom';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -77,7 +74,7 @@ export const createHead = (withWidth: boolean) => {
 const BoardListPage: FC = () => {
   const { t } = useTranslation('main');
 
-  const [presidents, setPresidents] = useRecoilState(userListState);
+  const [presidents, setPresidents] = useState();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
