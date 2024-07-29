@@ -17,7 +17,7 @@ function App() {
       <Router>
         <Navigation />
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<BoardListPage />} />
           <Route path="/BoardListPage" element={<BoardListPage />} />
           <Route path="/TodoListPage" element={<TodoListPage />} />
           <Route path="/UserListPage" element={<UserListPage />} />
